@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Trill</string>
+    <string name="name">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="user_name">Username</string>
+    <string name="email_address">Email</string>
+    <string name="password_again">Repeat Password</string>
+    <string name="cancel">Cancel</string>
+    <string name="login_with_google">Login With Google</string>
 </resources>

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "829819759154",
+    "project_id": "trill-b5fb1",
+    "storage_bucket": "trill-b5fb1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:829819759154:android:0e85d71aa7e37825a7ea2b",
+        "android_client_info": {
+          "package_name": "com.aygreyg.trill"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "829819759154-5p7lv5ero526pqmpi4dq9mr5ogqb1lss.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aygreyg.trill",
+            "certificate_hash": "c7ed99906a93009bdf0cf55e0feb128c816018f7"
+          }
+        },
+        {
+          "client_id": "829819759154-9gedo0nenppq8m1msb4t7sgdla6n9p7a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYYQ5X4Dmwgjv7F4AubH-AChnOB4eF6FI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "829819759154-9gedo0nenppq8m1msb4t7sgdla6n9p7a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
