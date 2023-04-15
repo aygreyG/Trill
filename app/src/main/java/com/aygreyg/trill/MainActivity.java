@@ -55,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 Log.d(LOG_TAG, "User successfully logged in! ");
                 Toast.makeText(MainActivity.this, "Successfully logged in! ", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(this, FeedActivity.class);
+                startActivity(intent);
             } else {
                 Log.d(LOG_TAG, "User couldn't log in! " + task.getException().getMessage());
                 Toast.makeText(MainActivity.this, "Couldn't log in! " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
@@ -95,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 Log.d(LOG_TAG, "User successfully logged in! ");
                 Toast.makeText(MainActivity.this, "Successfully logged in! ", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(this, FeedActivity.class);
+                startActivity(intent);
             } else {
                 Log.d(LOG_TAG, "User couldn't log in! " + task.getException().getMessage());
                 Toast.makeText(MainActivity.this, "Couldn't log in! " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
