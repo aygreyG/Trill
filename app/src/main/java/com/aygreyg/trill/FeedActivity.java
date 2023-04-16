@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -25,11 +26,11 @@ public class FeedActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     private RecyclerView mRecyclerView;
-    private ArrayList<FeedItem> mItemList;
+    private ArrayList<FeedItem> mPostsList;
     private FeedItemAdapter mFeedItemAdapter;
 
     private FirebaseFirestore mFireStore;
-    private CollectionReference mItems;
+    private CollectionReference mPosts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,25 +47,51 @@ public class FeedActivity extends AppCompatActivity {
 
         this.mRecyclerView = findViewById(R.id.recycleView);
         this.mRecyclerView.setLayoutManager(new GridLayoutManager(this, 1));
-        this.mItemList = new ArrayList<>();
-        this.mFeedItemAdapter = new FeedItemAdapter(this, mItemList);
+        this.mPostsList = new ArrayList<>();
+        this.mFeedItemAdapter = new FeedItemAdapter(this, mPostsList);
         this.mRecyclerView.setAdapter(mFeedItemAdapter);
 
         mFireStore = FirebaseFirestore.getInstance();
-        mItems = mFireStore.collection("Posts");
+        mPosts = mFireStore.collection("Posts");
 
         queryData();
     }
 
-    private void queryData() {
-        mItemList.clear();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(LOG_TAG, "onResume");
+        queryData();
+    }
 
-        mItems.orderBy("likes", Query.Direction.DESCENDING).get().addOnSuccessListener(queryDocumentSnapshots -> {
-           for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
-               FeedItem item = documentSnapshot.toObject(FeedItem.class);
-               mItemList.add(item);
-           }
+    private void queryData() {
+        mPosts.orderBy("userids", Query.Direction.DESCENDING).get().addOnSuccessListener(queryDocumentSnapshots -> {
+            mPostsList.clear();
+            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                FeedItem item = documentSnapshot.toObject(FeedItem.class);
+                item.setId(documentSnapshot.getId());
+                mPostsList.add(item);
+            }
             mFeedItemAdapter.notifyDataSetChanged();
+        });
+    }
+
+    public void updateLikes(FeedItem item) {
+        String userId = user.getUid();
+        if (userId.equals(item.getUserid()) || item._getId() == null) {
+            return;
+        }
+
+        if (item.getUserids().contains(userId)) {
+            item.unlike(userId);
+        } else {
+            item.like(userId);
+        }
+
+        mPosts.document(item._getId()).update("userids", item.getUserids(), "likes", item.getLikes()).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                queryData();
+            }
         });
     }
 
@@ -84,7 +111,8 @@ public class FeedActivity extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.post_button:
-                //todo: new activity
+                Intent intent = new Intent(this, NewPostActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

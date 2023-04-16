@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp">
+    android:layout_marginStart="20dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="20dp"
+    android:layout_marginBottom="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,14 +42,14 @@
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
-            <ImageButton
-                android:layout_alignParentEnd="true"
-                android:id="@+id/like_button"
-                android:layout_width="@dimen/image_button_size"
-                android:layout_height="@dimen/image_button_size"
-                android:background="?android:attr/selectableItemBackground"
-                android:contentDescription="Like Button"
-                android:src="@drawable/baseline_thumb_up_off_alt_24" />
+                <ImageButton
+                    android:id="@+id/like_button"
+                    android:layout_width="@dimen/image_button_size"
+                    android:layout_height="@dimen/image_button_size"
+                    android:layout_alignParentEnd="true"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:contentDescription="Like Button"
+                    android:src="@drawable/baseline_thumb_up_off_alt_24" />
             </RelativeLayout>
 
         </LinearLayout>

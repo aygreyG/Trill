@@ -10,6 +10,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class RegisterActivity extends AppCompatActivity {
     private static final String LOG_TAG = RegisterActivity.class.getName();
@@ -21,11 +24,10 @@ public class RegisterActivity extends AppCompatActivity {
     EditText passwordConfirmEditText;
 
     private FirebaseAuth mAuth;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.register);
+        setContentView(R.layout.activity_register);
         int secret_key = getIntent().getIntExtra("SECRET_KEY", 0);
 
         if (secret_key != SECRET_KEY) {
@@ -53,7 +55,21 @@ public class RegisterActivity extends AppCompatActivity {
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, task -> {
                 if (task.isSuccessful()) {
                     Log.d(LOG_TAG, "Registered: " + userName + ", e-mail: " + email);
+                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                            .setDisplayName(userName)
+                            .build();
+
                     Toast.makeText(RegisterActivity.this, "User successfully created!", Toast.LENGTH_LONG).show();
+
+                    task.getResult().getUser().updateProfile(profileUpdates).addOnCompleteListener(task1 -> {
+                        if (task1.isSuccessful()) {
+                            Log.d(LOG_TAG, "User updated with username!");
+                            finish();
+                        } else {
+                            Log.d(LOG_TAG, "User couldn't be updated with username! " + task.getException().getMessage());
+                            finish();
+                        }
+                    });
                 } else {
                     Log.d(LOG_TAG, "User couldn't be created! " + task.getException().getMessage());
                     Toast.makeText(RegisterActivity.this, "User couldn't be created!", Toast.LENGTH_LONG).show();
@@ -65,11 +81,6 @@ public class RegisterActivity extends AppCompatActivity {
     private boolean checkInputs() {
         if (userNameEditText.length() == 0) {
             userNameEditText.setError("You must provide a username!");
-            return false;
-        }
-
-        if (userEmailEditText.length() == 0) {
-            userEmailEditText.setError("You must provide an email!");
             return false;
         }
 

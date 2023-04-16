@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -18,6 +19,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class MainActivity extends AppCompatActivity {
@@ -45,11 +47,22 @@ public class MainActivity extends AppCompatActivity {
                 .requestEmail()
                 .build();
         mGSignInClient = GoogleSignIn.getClient(this, gso);
+
+        FirebaseUser user = this.mAuth.getCurrentUser();
+
+        if (user != null) {
+            Intent intent = new Intent(this, FeedActivity.class);
+            startActivity(intent);
+        }
     }
 
     public void login(View view) {
         String email = emailEditText.getText().toString();
         String password = passwordEditText.getText().toString();
+
+        if (!checkInputs(email, password)) {
+            return;
+        }
 
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
@@ -62,6 +75,25 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Couldn't log in! " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private boolean checkInputs(String email, String password) {
+        if (emailEditText.length() == 0) {
+            emailEditText.setError("You must provide an email!");
+            return false;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailEditText.setError("You must provide a valid email!");
+            return false;
+        }
+
+        if (passwordEditText.length() == 0) {
+            passwordEditText.setError("You must provide a password!");
+            return false;
+        }
+
+        return true;
     }
 
     public void openRegister(View view) {
@@ -84,14 +116,14 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                FirebaseAuthWithGoogle(account.getIdToken());
+                FirebaseAuthWithGoogle(account.getIdToken(), account.getDisplayName());
             } catch (ApiException e) {
                 Log.e(LOG_TAG, "Google sign in failed", e);
             }
         }
     }
 
-    private void FirebaseAuthWithGoogle(String idToken) {
+    private void FirebaseAuthWithGoogle(String idToken, String accountName) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {

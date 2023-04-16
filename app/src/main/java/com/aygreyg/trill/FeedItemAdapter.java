@@ -1,16 +1,19 @@
 package com.aygreyg.trill;
 
 import android.content.Context;
-import android.util.Log;
+import android.graphics.drawable.Icon;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
@@ -55,6 +58,7 @@ public class FeedItemAdapter extends RecyclerView.Adapter<FeedItemAdapter.ViewHo
         private TextView mUserNameText;
         private TextView mContentText;
         private TextView mLikeCount;
+        private ImageButton mImageButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -62,19 +66,20 @@ public class FeedItemAdapter extends RecyclerView.Adapter<FeedItemAdapter.ViewHo
             this.mUserNameText = itemView.findViewById(R.id.username);
             this.mContentText = itemView.findViewById(R.id.feed_content);
             this.mLikeCount = itemView.findViewById(R.id.like_count);
-
-            itemView.findViewById(R.id.like_button).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //todo: update like count
-                }
-            });
+            this.mImageButton = itemView.findViewById(R.id.like_button);
         }
 
         public void bindTo(FeedItem currentItem) {
             this.mUserNameText.setText(currentItem.getUsername());
             this.mContentText.setText(currentItem.getContent());
             this.mLikeCount.setText(currentItem.getLikes().toString());
+            if (currentItem.getUserids().contains(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                this.mImageButton.setImageResource(R.drawable.baseline_thumb_up_alt_24);
+            } else {
+                this.mImageButton.setImageResource(R.drawable.baseline_thumb_up_off_alt_24);
+            }
+
+            this.mImageButton.setOnClickListener(view -> ((FeedActivity) mContext).updateLikes(currentItem));
         }
     }
 }
