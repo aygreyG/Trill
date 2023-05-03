@@ -1,5 +1,7 @@
 package com.aygreyg.trill;
 
+import com.google.firebase.Timestamp;
+
 import java.util.ArrayList;
 
 public class FeedItem {
@@ -9,6 +11,7 @@ public class FeedItem {
     private String content;
     private ArrayList<String> userids;
     private Integer likes;
+    private Timestamp createdAt;
 
     public ArrayList<String> getUserids() {
         return userids;
@@ -20,6 +23,15 @@ public class FeedItem {
         this.content = content;
         this.userids = userids;
         this.likes = likes;
+        this.createdAt = Timestamp.now();
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 
     public FeedItem() {
@@ -47,6 +59,10 @@ public class FeedItem {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public void like(String userid) {

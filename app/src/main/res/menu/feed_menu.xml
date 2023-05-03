@@ -3,8 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/post_button"
-        android:title="Post something"
+        android:title="New Post"
+        android:icon="@drawable/round_add_24"
         app:showAsAction="always"
+        />
+    <item
+        android:id="@+id/changeUsername"
+        android:title="Change username"
+        app:showAsAction="never"
         />
     <item
         android:id="@+id/logout"

@@ -4,12 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -54,6 +56,13 @@ public class FeedActivity extends AppCompatActivity {
         mFireStore = FirebaseFirestore.getInstance();
         mPosts = mFireStore.collection("Posts");
 
+        SwipeRefreshLayout pullToRefresh = findViewById(R.id.pullToRefresh);
+
+        pullToRefresh.setOnRefreshListener(() -> {
+            queryData();
+            pullToRefresh.setRefreshing(false);
+        });
+
         queryData();
     }
 
@@ -65,7 +74,9 @@ public class FeedActivity extends AppCompatActivity {
     }
 
     private void queryData() {
-        mPosts.orderBy("userids", Query.Direction.DESCENDING).get().addOnSuccessListener(queryDocumentSnapshots -> {
+        mPosts.orderBy("userids", Query.Direction.DESCENDING)
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .get().addOnSuccessListener(queryDocumentSnapshots -> {
             mPostsList.clear();
             for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                 FeedItem item = documentSnapshot.toObject(FeedItem.class);
@@ -95,6 +106,16 @@ public class FeedActivity extends AppCompatActivity {
         });
     }
 
+    public void deletePost(FeedItem item) {
+
+        mPosts.document(item._getId()).delete().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(FeedActivity.this, "Successfully deleted post!", Toast.LENGTH_LONG).show();
+                queryData();
+            }
+        });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -111,8 +132,12 @@ public class FeedActivity extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.post_button:
-                Intent intent = new Intent(this, NewPostActivity.class);
-                startActivity(intent);
+                Intent postIntent = new Intent(this, NewPostActivity.class);
+                startActivity(postIntent);
+                return true;
+            case R.id.changeUsername:
+                Intent changeUsernameIntent = new Intent(this, ChangeUserNameActivity.class);
+                startActivity(changeUsernameIntent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

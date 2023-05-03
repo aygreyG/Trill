@@ -12,6 +12,9 @@
         android:theme="@style/Theme.Trill"
         tools:targetApi="31">
         <activity
+            android:name=".ChangeUserNameActivity"
+            android:exported="false" />
+        <activity
             android:name=".NewPostActivity"
             android:exported="false" />
         <activity

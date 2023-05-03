@@ -1,7 +1,8 @@
 package com.aygreyg.trill;
 
 import android.content.Context;
-import android.graphics.drawable.Icon;
+import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class FeedItemAdapter extends RecyclerView.Adapter<FeedItemAdapter.ViewHolder> {
     private static final String LOG_TAG = FeedItemAdapter.class.getName();
@@ -58,7 +60,9 @@ public class FeedItemAdapter extends RecyclerView.Adapter<FeedItemAdapter.ViewHo
         private TextView mUserNameText;
         private TextView mContentText;
         private TextView mLikeCount;
-        private ImageButton mImageButton;
+        private TextView mTimestamp;
+        private ImageButton mLikeButton;
+        private ImageButton mDeleteButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -66,20 +70,35 @@ public class FeedItemAdapter extends RecyclerView.Adapter<FeedItemAdapter.ViewHo
             this.mUserNameText = itemView.findViewById(R.id.username);
             this.mContentText = itemView.findViewById(R.id.feed_content);
             this.mLikeCount = itemView.findViewById(R.id.like_count);
-            this.mImageButton = itemView.findViewById(R.id.like_button);
+            this.mLikeButton = itemView.findViewById(R.id.like_button);
+            this.mDeleteButton = itemView.findViewById(R.id.delete_button);
+            this.mTimestamp = itemView.findViewById(R.id.created_at);
         }
 
         public void bindTo(FeedItem currentItem) {
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+
+            Date now = new Date();
+            String relativeTime = DateUtils.getRelativeTimeSpanString(currentItem.getCreatedAt().toDate().getTime(), now.getTime(), 0L, DateUtils.FORMAT_ABBREV_ALL).toString();
+
+            this.mTimestamp.setText(relativeTime);
             this.mUserNameText.setText(currentItem.getUsername());
             this.mContentText.setText(currentItem.getContent());
             this.mLikeCount.setText(currentItem.getLikes().toString());
-            if (currentItem.getUserids().contains(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                this.mImageButton.setImageResource(R.drawable.baseline_thumb_up_alt_24);
+            if (currentItem.getUserids().contains(auth.getCurrentUser().getUid())) {
+                this.mLikeButton.setImageResource(R.drawable.baseline_thumb_up_alt_24);
             } else {
-                this.mImageButton.setImageResource(R.drawable.baseline_thumb_up_off_alt_24);
+                this.mLikeButton.setImageResource(R.drawable.baseline_thumb_up_off_alt_24);
             }
 
-            this.mImageButton.setOnClickListener(view -> ((FeedActivity) mContext).updateLikes(currentItem));
+            if (!currentItem.getUserid().equals(auth.getCurrentUser().getUid())) {
+                this.mDeleteButton.setVisibility(View.GONE);
+            } else {
+                this.mDeleteButton.setVisibility(View.VISIBLE);
+                this.mDeleteButton.setOnClickListener(view -> ((FeedActivity) mContext).deletePost(currentItem));
+            }
+
+            this.mLikeButton.setOnClickListener(view -> ((FeedActivity) mContext).updateLikes(currentItem));
         }
     }
 }
