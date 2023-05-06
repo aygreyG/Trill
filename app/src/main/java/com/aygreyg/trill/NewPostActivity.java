@@ -22,6 +22,7 @@ public class NewPostActivity extends AppCompatActivity {
     FirebaseUser user;
     EditText contentEditText;
     private FirebaseFirestore mFireStore;
+    private NotificationHelper mNotification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,7 @@ public class NewPostActivity extends AppCompatActivity {
             finish();
         }
 
+        this.mNotification = new NotificationHelper(this);
         this.contentEditText = findViewById(R.id.editTextPostContent);
         this.mFireStore = FirebaseFirestore.getInstance();
     }
@@ -55,6 +57,7 @@ public class NewPostActivity extends AppCompatActivity {
 
         this.mFireStore.collection("Posts").add(item).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
+                this.mNotification.send("You just posted something to the feed!");
                 finish();
             } else {
                 Log.d(LOG_TAG, "Couldn't make new post!" + task.getException().getMessage());
